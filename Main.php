@@ -44,4 +44,70 @@ add_filter("rest_{$ufaq_post}_collection_params", function($params) {
     return $params;
 }, 10, 3);
 
+/**
+ * HDX Extra Links inside strattic paths
+ */
+
+function list_faq_categories() {
+    $categories = get_terms(array('taxonomy' => 'ufaq-category', 'hide_empty' => false, 'parent' => 0));
+    $result = array();
+
+    foreach ($categories as $category) {
+        // Array to hold sub-category IDs
+        $sub_cat_ids = array();
+
+        $result[] = '/custom-ufaq-category/'.$category->term_id;
+        // Fetch sub-categories
+        $sub_categories = get_terms(array('taxonomy' => 'ufaq-category', 'hide_empty' => false, 'parent' => $category->term_id));
+        foreach ($sub_categories as $sub_cat) {
+            $sub_cat_ids[] = $sub_cat->term_id;
+        }
+
+        if (!empty($sub_cat_ids)) {
+            // Prepare API URL for sub-categories
+            $sub_cat_ids_string = implode(',', $sub_cat_ids);
+            $custom_api_url = '/custom-ufaq-list/' . $sub_cat_ids_string;
+            $result[] = $custom_api_url;
+        }
+    }
+
+    return $result;
+}
+
+add_filter(
+   'strattic_paths',
+    function ($paths) {
+        $faq_urls = list_faq_categories();
+        // do NOT end these with slash!
+        $custompaths = array_merge(
+            [
+                '/custom-ufaq-category'
+            ],
+            $faq_urls,
+            [
+                '/wp-content/themes/uncode-child/style.css.map',
+                '/wp-content/themes/uncode-child/js/humdata-footer.js.map',
+                '/wp-content/plugins/enhanced-tooltipglossary/assets/js/tooltip.min.js',
+                '/wp-content/plugins/enhanced-tooltipglossary/assets/css/tooltip.min.css',
+                '/wp-content/plugins/enhanced-tooltipglossary/assets/js/modernizr.min.js',
+                '/wp-admin/js/password-strength-meter.min.js'
+            ]
+        );
+        foreach ($custompaths as $custompath) {
+            $paths[] = array(
+                'path' => $custompath,
+                'priority' => 8,
+                'quick_publish' => true
+            );
+            $paths[] = array(
+                'path' => $custompath."/",
+                'priority' => 8,
+                'quick_publish' => true
+            );
+        }
+        return $paths;
+    }
+);
+
+
 ?>
