@@ -3,7 +3,7 @@
    Plugin Name: API Sort extension for Ultimate FAQ
    Plugin URI: https://centre.humdata.org
    description: Ultimate FAQ plugin doesn't apply sorting to for "ufaq" posts on the REST API. This plugin enables it through these params: orderby=meta_value_num, meta_key=ufaq_order and per_page=1000
-   Version: 1.1
+   Version: 1.2
    Author: https://centre.humdata.org
    Author URI: https://centre.humdata.org
    License: GPL2
